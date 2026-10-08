@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+---
+<BaseLayout title="Privacy" noindex><div class="shell"><header class="page-heading"><p class="eyebrow">Site information</p><h1>Privacy</h1></header><div class="prose legal-copy"><h2>This preview</h2><p>This build has no analytics, advertising, contact form or external font requests. Fonts are served with the website. Its only browser storage is the theme preference you choose with the dark mode control.</p><h2>Contact</h2><p>The email link opens your email application. The LinkedIn link takes you to LinkedIn, where that service's privacy terms apply. For questions about this website, contact <a href={'mailto:'+site.email}>{site.email}</a>.</p><h2>Before public launch</h2><p>The privacy notice must be completed for the selected hosting provider, its request logging and the publisher's details before public deployment. This page describes the current preview and is not a completed public privacy notice.</p></div></div></BaseLayout>

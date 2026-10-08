@@ -1,0 +1,87 @@
+import { readdirSync, writeFileSync, mkdirSync } from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+const runtime = process.env.PLAYWRIGHT_MODULE;
+const { chromium } = runtime ? await import(pathToFileURL(runtime).href) : await import('playwright');
+const base = process.env.PREVIEW_URL || 'http://127.0.0.1:4321';
+const browser = await chromium.launch({ channel: 'chrome', headless: true });
+const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, colorScheme: 'light' });
+const page = await context.newPage();
+const errors = [], results = [], links = new Set(), outboundRequests = new Set();
+page.on('pageerror', error => errors.push(error.message));
+page.on('request', request => { const u = new URL(request.url()); if (u.protocol.startsWith('http') && u.origin !== new URL(base).origin) outboundRequests.add(request.url()); });
+const walk = d => readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(d,e.name)): [path.join(d,e.name)]);
+const routes=walk('dist').filter(f=>f.endsWith('.html') && !f.endsWith('404.html')).map(f=>'/'+path.relative('dist',f).replaceAll('\\','/').replace(/index\.html$/,''));
+mkdirSync('.qa/screenshots',{recursive:true});
+for(const route of routes){
+ const response=await page.goto(base+route,{waitUntil:'networkidle'});
+ if(response.status()!==200) errors.push(route+': HTTP '+response.status());
+ await page.evaluate(()=>document.fonts.ready);
+ const data=await page.evaluate(()=>{
+  const h1=document.querySelectorAll('h1');
+  return {title:document.title,h1:h1.length,description:document.querySelector('meta[name="description"]')?.content,canonical:document.querySelector('link[rel="canonical"]')?.href,robots:document.querySelector('meta[name="robots"]')?.content,lang:document.documentElement.lang,links:[...document.querySelectorAll('a[href]')].map(x=>x.getAttribute('href')),ids:[...document.querySelectorAll('[id]')].map(x=>x.id),font:getComputedStyle(document.body).fontFamily};
+ });
+ if(data.h1!==1 || !data.description || !data.canonical || data.lang!=='en') errors.push(route+': incomplete document metadata');
+ const ogPath = new URL(await page.locator('meta[property="og:image"]').getAttribute('content')).pathname;
+ const ogResponse = await context.request.get(base+ogPath);
+ if(ogResponse.status()!==200 || !ogResponse.headers()['content-type']?.includes('image/png')) errors.push(route+': missing Open Graph image');
+ if(!data.robots.includes('noindex')) errors.push(route+': preview is indexable');
+ if(new Set(data.ids).size!==data.ids.length) errors.push(route+': duplicate element IDs');
+ for(const link of data.links) if(link.startsWith('/') || link.startsWith('#')) links.add(new URL(link,base+route).href);
+ await page.addScriptTag({path:'node_modules/axe-core/axe.min.js'});
+ const audit=await page.evaluate(async()=>await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']}}));
+ for(const v of audit.violations) errors.push(route+': axe '+v.id+' '+v.nodes.map(n=>n.target.join(' ')).join(', '));
+ for(const width of [360,768,1440]){
+  await page.setViewportSize({width,height:1000});
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
+  if(overflow) errors.push(route+': horizontal overflow at '+width);
+ }
+ if(route==='/') await page.screenshot({path:'.qa/screenshots/home-desktop-light.png',fullPage:true});
+ if(route==='/work/mass-enrolment/') await page.screenshot({path:'.qa/screenshots/case-desktop-light.png',fullPage:true});
+ results.push({route,title:data.title,a11yViolations:audit.violations.length,font:data.font});
+}
+for(const link of links){
+ const target=new URL(link);
+ const response=await context.request.get(target.origin+target.pathname);
+ if(response.status()!==200) errors.push('Broken internal link: '+link+' ('+response.status()+')');
+ if(target.hash && !(await response.text()).includes('id="'+decodeURIComponent(target.hash.slice(1))+'"')) errors.push('Broken anchor: '+link);
+}
+await page.goto(base,{waitUntil:'networkidle'});
+await page.setViewportSize({width:390,height:844});
+await page.screenshot({path:'.qa/screenshots/home-mobile-light.png',fullPage:true});
+await page.getByRole('button',{name:'Dark mode',exact:true}).click();
+if(await page.getByRole('button',{name:'Dark mode',exact:true}).getAttribute('aria-pressed')!=='true') errors.push('Theme control state did not change');
+await page.reload({waitUntil:'networkidle'});
+if(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor)!=='rgb(22, 19, 15)') errors.push('Dark theme did not persist');
+await page.screenshot({path:'.qa/screenshots/home-mobile-dark.png',fullPage:true});
+await page.setViewportSize({width:1440,height:1000});
+await page.screenshot({path:'.qa/screenshots/home-desktop-dark.png',fullPage:true});
+await page.addScriptTag({path:'node_modules/axe-core/axe.min.js'});
+const darkAudit=await page.evaluate(async()=>await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']}}));
+for(const v of darkAudit.violations) errors.push('Dark homepage: axe '+v.id);
+await page.goto(base+'/contact/');
+if(await page.locator('a[href="mailto:chaudhry.arslan@outlook.de"]').count()<1) errors.push('Contact email missing');
+if(await page.locator('a[href="https://www.linkedin.com/in/arslan-chaudhry-"]').count()<1) errors.push('LinkedIn link missing');
+await page.goto(base);
+await page.keyboard.press('Tab');
+if(await page.evaluate(()=>document.activeElement?.textContent)!=='Skip to content') errors.push('Skip link is not first keyboard stop');
+await page.keyboard.press('Enter');
+if(await page.evaluate(()=>document.activeElement?.id)!=='main') errors.push('Skip link does not focus main');
+const systemContext=await browser.newContext({colorScheme:'dark'});
+const systemPage=await systemContext.newPage();
+await systemPage.goto(base,{waitUntil:'networkidle'});
+if(await systemPage.evaluate(()=>getComputedStyle(document.body).backgroundColor)!=='rgb(22, 19, 15)') errors.push('System dark preference not respected');
+await systemContext.close();
+const noJsContext=await browser.newContext({javaScriptEnabled:false});
+const noJsPage=await noJsContext.newPage();
+await noJsPage.goto(base+'/work/mass-enrolment/');
+if(await noJsPage.locator('h1').count()!==1 || await noJsPage.locator('.prose').innerText().then(x=>x.length)<1000) errors.push('Content requires JavaScript');
+await noJsContext.close();
+if(outboundRequests.size) errors.push('Third-party requests: '+[...outboundRequests].join(','));
+const missing=await context.request.get(base+'/not-a-real-page/');
+if(missing.status()!==404) errors.push('Unknown URL did not return 404');
+const report={pages:results.length,internalLinks:links.size,results,errors};
+writeFileSync('.qa/browser-report.json',JSON.stringify(report,null,2));
+console.log(JSON.stringify({pages:results.length,internalLinks:links.size,errors},null,2));
+await browser.close();
+if(errors.length) process.exit(1);

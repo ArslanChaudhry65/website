@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Arrow from './Arrow.astro';
+import CaseDiagram from './CaseDiagram.astro';
+interface Props { item: CollectionEntry<'work'>; }
+const { item } = Astro.props;
+const { data } = item;
+---
+<article class:list={['work-row', {'work-note': data.kind === 'Decision note'}]}>
+  <div class="work-index"><span class="eyebrow">{data.number} / {data.kind}</span><span class="category">{data.category}</span></div>
+  <div class="work-copy">
+    <h3><a href={'/work/' + item.id + '/'}>{data.title}</a></h3>
+    <p>{data.description}</p>
+    <dl class="work-evidence"><div><dt>My contribution</dt><dd>{data.decision}</dd></div><div><dt>Evidence</dt><dd>{data.result}</dd></div></dl>
+    <a class="text-link" href={'/work/' + item.id + '/'}>{data.kind === 'Decision note' ? 'Read the decision note' : 'Read the case'} <Arrow /></a>
+  </div>
+  <div class="work-visual"><CaseDiagram kind={data.diagram} compact /></div>
+</article>

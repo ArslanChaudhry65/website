@@ -1,0 +1,277 @@
+/* ============================================================
+   Design Identity — Arslan Chaudhry
+   Token-Satz, Quelle der Wahrheit.
+
+   Grundentscheidungen:
+   - Warme Neutrale (Papierton) statt Weiß/Kaltgrau
+   - Ein Akzent: Petrol. Kein zweiter Buntton.
+   - IBM Plex Sans / Serif / Mono — eine Familie, drei Schnitte
+   - Radius 4px systemweit
+   - Keine Schatten. Hierarchie über Linien und Flächen.
+   - Dunkelmodus ist Spiegelung, nicht zweites System
+   ============================================================ */
+
+:root {
+  /* --- Papier & Tinte, hell ------------------------------- */
+  --ac-paper-0: #FDFBF7;        /* Karte, höchste Fläche */
+  --ac-paper-1: #FBF8F3;        /* Seitengrund, Standard */
+  --ac-paper-2: #F7F3EC;        /* eingesenkt, App-Grund */
+  --ac-paper-3: #F0EAE0;        /* subtile Füllung, Hover */
+  --ac-line: #E7E0D5;           /* Haarlinie, Standard */
+  --ac-line-strong: #D8CFC0;    /* betonte Trennung, Rahmen */
+  --ac-ink-0: #1F1B15;          /* Überschriften, primär */
+  --ac-ink-1: #3D382F;          /* Fließtext */
+  --ac-ink-2: #5E5649;          /* sekundär, Beschreibungen */
+  --ac-ink-3: #756D62;          /* gedämpft, Platzhalter, Meta — AA ab 4.61:1 */
+
+  /* --- Akzent: Petrol ------------------------------------- */
+  --ac-accent: #135E63;         /* Hauptaktion, Links, Hervorhebung */
+  --ac-accent-hover: #0F4E52;
+  --ac-accent-tint: #DFEDED;    /* Flächen-Tint, sparsam */
+  --ac-accent-tint-line: #BCD9DA;
+  --ac-on-accent: #FBF8F3;      /* Text auf gefülltem Akzent */
+  --ac-on-tint: #0C4448;        /* Text auf Akzent-Tint */
+
+  /* --- Semantik (nur für Zustände, nie für Marke) --------- */
+  --ac-success: #4A7C2F;
+  --ac-success-tint: #E9F0DF;
+  --ac-on-success-tint: #2E5019;
+  --ac-danger: #A8382C;
+  --ac-danger-tint: #F7E5E2;
+  --ac-on-danger-tint: #6E2119;
+  --ac-warning: #8A6212;
+  --ac-warning-tint: #F7EDD9;
+  --ac-on-warning-tint: #5A3F06;
+
+  /* --- Kategorien für Diagramme --------------------------- */
+  /* Reihenfolge ist verbindlich. cat-1 ist der Akzent selbst und
+     folgt ihm automatisch. Tint = Fläche, On-Tint = Text darauf.
+     Nicht selbst erfinden — sonst driften Artefakte auseinander. */
+  --ac-cat-1: var(--ac-accent);            /* Petrol, immer zuerst */
+  --ac-cat-1-tint: var(--ac-accent-tint);
+  --ac-cat-1-on-tint: var(--ac-on-tint);
+  --ac-cat-2: #8A6212;                     /* Bronze */
+  --ac-cat-2-tint: #F3EADC;
+  --ac-cat-2-on-tint: #573B00;
+  --ac-cat-3: #59417E;                     /* Aubergine */
+  --ac-cat-3-tint: #EDE8F8;
+  --ac-cat-3-on-tint: #483764;
+  --ac-cat-4: #7A2E3E;                     /* Burgundy */
+  --ac-cat-4-tint: #FAE5E8;
+  --ac-cat-4-on-tint: #652C37;
+  --ac-cat-5: #6E6455;                     /* Neutral */
+  --ac-cat-5-tint: #EDEBE7;
+  --ac-cat-5-on-tint: #474035;
+
+  /* --- Schrift -------------------------------------------- */
+  --ac-font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --ac-font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+  --ac-font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Größen — 11 Stufen, mehr braucht es nicht */
+  --ac-text-micro: 11px;        /* nur Mono, Meta */
+  --ac-text-caption: 12px;
+  --ac-text-small: 13px;
+  --ac-text-body: 14px;         /* UI-Standard */
+  --ac-text-body-lg: 16px;      /* Dokument-Standard */
+  --ac-text-subheading: 18px;
+  --ac-text-heading: 20px;
+  --ac-text-heading-lg: 24px;
+  --ac-text-title: 30px;
+  --ac-text-display: 38px;
+  --ac-text-display-lg: 48px;
+
+  /* Zeilenhöhen */
+  --ac-leading-display: 1.15;
+  --ac-leading-heading: 1.26;
+  --ac-leading-ui: 1.5;
+  --ac-leading-prose: 1.75;     /* Serif-Fließtext in Dokumenten */
+  --ac-leading-mono: 1.45;
+
+  /* Laufweite — negativ oder null. Genau eine positive Ausnahme:
+     Mono-Mikrolabel in Versalien (≤12px, text-transform: uppercase).
+     Typografisch vertretbare Bandbreite dort 0.04–0.06em; der Token ist
+     die Vorgabe, damit kein Rohwert im Stylesheet steht. */
+  --ac-tracking-display: -0.022em;
+  --ac-tracking-heading: -0.015em;
+  --ac-tracking-normal: 0;
+  --ac-tracking-label: 0.05em;  /* nur Versal-Mono-Mikrolabel */
+
+  /* Gewichte — drei, keine weiteren */
+  --ac-weight-regular: 400;
+  --ac-weight-medium: 500;      /* Überschriften, Hauptaktion */
+  --ac-weight-semibold: 600;    /* nur Wortmarke */
+
+  /* --- Raum: 4px-Raster ----------------------------------- */
+  --ac-space-1: 4px;
+  --ac-space-2: 8px;
+  --ac-space-3: 12px;
+  --ac-space-4: 16px;
+  --ac-space-5: 20px;
+  --ac-space-6: 24px;
+  --ac-space-8: 32px;
+  --ac-space-10: 40px;
+  --ac-space-14: 56px;
+  --ac-space-18: 72px;
+
+  /* --- Form ------------------------------------------------ */
+  --ac-radius-sm: 2px;          /* Chips, Marker */
+  --ac-radius: 4px;             /* Standard: Buttons, Karten, Felder */
+  --ac-radius-lg: 8px;          /* nur Flächen über ~400px */
+  --ac-hairline: 1px;
+  --ac-rule-accent: 2px;        /* Akzentlinie über Zwischenüberschriften */
+  --ac-focus-ring: 2px;         /* :focus-visible-Outline, systemweit */
+
+  /* Keine Schatten im System. Ausnahme: schwebende Menüs. */
+  --ac-shadow-popover: 0 6px 20px rgba(31, 27, 21, 0.10), 0 1px 3px rgba(31, 27, 21, 0.06);
+
+  /* --- Bewegung -------------------------------------------- */
+  --ac-dur-fast: 120ms;
+  --ac-dur: 200ms;
+  --ac-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ============================================================
+   Dunkelmodus — Spiegelung derselben Entscheidungen.
+   Warmes Fast-Schwarz statt reinem Schwarz, damit die warme
+   Grundstimmung erhalten bleibt.
+   ============================================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ac-paper-0: #221E18;
+    --ac-paper-1: #16130F;
+    --ac-paper-2: #100E0B;
+    --ac-paper-3: #2B2620;
+    --ac-line: #322C23;
+    --ac-line-strong: #423B2F;
+    --ac-ink-0: #EDE6D9;
+    --ac-ink-1: #C5BAA8;
+    --ac-ink-2: #A79C8C;
+    --ac-ink-3: #908678;
+
+    --ac-accent: #4FB8BE;
+    --ac-accent-hover: #6FC9CE;
+    --ac-accent-tint: #123033;
+    --ac-accent-tint-line: #1E4B4F;
+    --ac-on-accent: #0F2E30;
+    --ac-on-tint: #7FD3D8;
+
+    --ac-success: #8FC46E;
+    --ac-success-tint: #1D2A14;
+    --ac-on-success-tint: #A8D68C;
+    --ac-danger: #E0857A;
+    --ac-danger-tint: #2E1614;
+    --ac-on-danger-tint: #EFA79E;
+    --ac-warning: #D9A63C;
+    --ac-warning-tint: #2C2211;
+    --ac-on-warning-tint: #E4BC63;
+
+    --ac-cat-2: #D6AA45;
+    --ac-cat-2-tint: #2E230B;
+    --ac-cat-2-on-tint: #E2BC6C;
+    --ac-cat-3: #AC90DE;
+    --ac-cat-3-tint: #272034;
+    --ac-cat-3-on-tint: #CBB3F8;
+    --ac-cat-4: #DB8C9C;
+    --ac-cat-4-tint: #321E22;
+    --ac-cat-4-on-tint: #F1ABB9;
+    --ac-cat-5: #A79C8C;
+    --ac-cat-5-tint: #272420;
+    --ac-cat-5-on-tint: #CAC0B2;
+
+    --ac-shadow-popover: 0 6px 20px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.30);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ac-paper-0: #221E18;
+  --ac-paper-1: #16130F;
+  --ac-paper-2: #100E0B;
+  --ac-paper-3: #2B2620;
+  --ac-line: #322C23;
+  --ac-line-strong: #423B2F;
+  --ac-ink-0: #EDE6D9;
+  --ac-ink-1: #C5BAA8;
+  --ac-ink-2: #A79C8C;
+  --ac-ink-3: #908678;
+
+  --ac-accent: #4FB8BE;
+  --ac-accent-hover: #6FC9CE;
+  --ac-accent-tint: #123033;
+  --ac-accent-tint-line: #1E4B4F;
+  --ac-on-accent: #0F2E30;
+  --ac-on-tint: #7FD3D8;
+
+  --ac-success: #8FC46E;
+  --ac-success-tint: #1D2A14;
+  --ac-on-success-tint: #A8D68C;
+  --ac-danger: #E0857A;
+  --ac-danger-tint: #2E1614;
+  --ac-on-danger-tint: #EFA79E;
+  --ac-warning: #D9A63C;
+  --ac-warning-tint: #2C2211;
+  --ac-on-warning-tint: #E4BC63;
+
+  --ac-cat-2: #D6AA45;
+  --ac-cat-2-tint: #2E230B;
+  --ac-cat-2-on-tint: #E2BC6C;
+  --ac-cat-3: #AC90DE;
+  --ac-cat-3-tint: #272034;
+  --ac-cat-3-on-tint: #CBB3F8;
+  --ac-cat-4: #DB8C9C;
+  --ac-cat-4-tint: #321E22;
+  --ac-cat-4-on-tint: #F1ABB9;
+  --ac-cat-5: #A79C8C;
+  --ac-cat-5-tint: #272420;
+  --ac-cat-5-on-tint: #CAC0B2;
+
+  --ac-shadow-popover: 0 6px 20px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+
+/* ============================================================
+   Dritter Geltungsbereich: Druck.
+
+   Hell und dunkel sind zwei Modi desselben Systems. Papier ist der
+   dritte — und der einzige, in dem der Grund nicht gesetzt, sondern
+   physisch vorhanden ist. Deshalb weicht er an vier Stellen bewusst
+   ab; jede Abweichung ist hier deklariert und damit prüfbar, statt
+   in jedem Dokument neu erfunden zu werden.
+
+   1. Papier geht auf reines Weiß. Das ist die eine Stelle, an der
+      die Regel „kein #FFFFFF" nachgibt: ein warmer Grund kostet
+      entweder Toner, oder er verschwindet ganz, sobald der Treiber
+      Hintergründe abschaltet. Auf Papier IST das Blatt der Grund.
+   2. ink-3 fällt mit ink-2 zusammen. Gedämpftes Grau bei 11px
+      übersteht einen Bildschirm, aber keinen Laserdruck.
+   3. line übernimmt den Wert von line-strong. Haarlinien, die auf
+      dem Schirm tragen, verschwinden im Druck eine Stufe zu früh;
+      line und line-strong fallen dabei zusammen.
+   4. accent dunkelt auf accent-hover ab, damit er als Tinte liest
+      und nicht als Licht.
+
+   Alles, was hier nicht steht, erbt den hellen Wert. Gemessen auf
+   Weiß: ink-0 17.13:1, ink-1 11.63:1, ink-2/ink-3 7.23:1, accent
+   9.41:1 — durchweg AAA, das richtige Ziel für Papier, weil ein
+   Leser dort die Helligkeit nicht hochdrehen kann.
+   ============================================================ */
+
+@media print {
+  :root,
+  :root[data-theme="light"],
+  :root[data-theme="dark"] {
+    --ac-paper-0: #FFFFFF;
+    --ac-paper-1: #FFFFFF;
+    --ac-paper-2: #FFFFFF;
+    --ac-paper-3: #F0EAE0;
+    --ac-line: #D8CFC0;
+    --ac-line-strong: #D8CFC0;
+    --ac-ink-0: #1F1B15;
+    --ac-ink-1: #3D382F;
+    --ac-ink-2: #5E5649;
+    --ac-ink-3: #5E5649;
+    --ac-accent: #0F4E52;
+    --ac-accent-hover: #0F4E52;
+    --ac-on-accent: #FFFFFF;
+  }
+}

@@ -1,0 +1,90 @@
+---
+import '../styles/tokens.css';
+import '../styles/fonts.css';
+import '../styles/global.css';
+import { site, isPublic } from '../data/site';
+import Arrow from '../components/Arrow.astro';
+interface Props {
+  title?: string;
+  description?: string;
+  section?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  schema?: Record<string, unknown>;
+  ogImage?: string;
+}
+const { title, description = site.description, section, type = 'website', noindex = false, schema, ogImage = 'site' } = Astro.props;
+const pageTitle = title ? title + ' | ' + site.name : 'Arslan Chaudhry | Product decisions for complex B2B software';
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const links = [{label:'Work',href:'/work/'},{label:'Writing',href:'/writing/'},{label:'About',href:'/about/'}];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={!isPublic || noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title="Arslan Chaudhry / Writing" href="/rss.xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/plex-sans.woff2" as="font" type="font/woff2" crossorigin />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:image" content={new URL('/og/' + ogImage + '.png', site.url).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={pageTitle} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />}
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('ac-theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-header shell">
+      <a class="wordmark" href="/" aria-label="Arslan Chaudhry, home">Arslan Chaudhry<span class="wordmark-mark" aria-hidden="true">.</span></a>
+      <nav aria-label="Main navigation">
+        {links.map(link => <a href={link.href} aria-current={section === link.label ? 'page' : undefined}>{link.label}</a>)}
+        <a href="/contact/" aria-current={section === 'Contact' ? 'page' : undefined}>Contact <Arrow direction="up" /></a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false" hidden>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="butt" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M12 7h5m-5 5h8m-8 5h5"/></svg>
+      </button>
+    </header>
+    <main id="main" tabindex="-1"><slot /></main>
+    <footer class="site-footer shell">
+      <div class="footer-lead"><p class="eyebrow">Start a conversation</p><h2>What makes your product difficult?</h2><a class="text-link" href={'mailto:' + site.email}>{site.email} <Arrow direction="up" /></a></div>
+      <div class="footer-bottom">
+        <p>© {new Date().getFullYear()} Arslan Chaudhry</p>
+        <nav aria-label="Footer navigation"><a href={site.linkedin}>LinkedIn <Arrow direction="up" /></a><a href="/cv/arslan-chaudhry.pdf">CV <Arrow direction="up" /></a><a href="/imprint/">Imprint</a><a href="/privacy/">Privacy</a></nav>
+      </div>
+    </footer>
+    <script>
+      const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+      const preference = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = () => document.documentElement.dataset.theme || (preference.matches ? 'dark' : 'light');
+      const syncButton = () => button?.setAttribute('aria-pressed', String(currentTheme() === 'dark'));
+      if (button) {
+        button.hidden = false;
+        syncButton();
+        preference.addEventListener('change', syncButton);
+        button.addEventListener('click', () => {
+          const theme = currentTheme() === 'dark' ? 'light' : 'dark';
+          document.documentElement.dataset.theme = theme;
+          try { localStorage.setItem('ac-theme', theme); } catch {}
+          syncButton();
+        });
+      }
+    </script>
+  </body>
+</html>

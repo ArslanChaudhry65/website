@@ -1,0 +1,16 @@
+---
+import { getCollection, render, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Arrow from '../../components/Arrow.astro';
+import { site } from '../../data/site';
+export async function getStaticPaths() {
+ return (await getCollection('writing')).map(entry=>({params:{slug:entry.id},props:{entry}}));
+}
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const related = await getEntry('work',entry.data.relatedWork);
+const schema = {'@context':'https://schema.org','@type':'Article',headline:entry.data.title,description:entry.data.description,author:{'@type':'Person',name:site.name,url:site.url+'/about/'},...(entry.data.publishedAt?{datePublished:entry.data.publishedAt.toISOString()}:{}),mainEntityOfPage:new URL(Astro.url.pathname,site.url).href};
+---
+<BaseLayout title={entry.data.title} description={entry.data.description} section="Writing" type="article" schema={schema} ogImage={entry.id}>
+<div class="shell"><header class="case-heading"><a class="back-link" href="/writing/">All writing</a><p class="eyebrow">{entry.data.topic}</p><h1>{entry.data.title}</h1><p class="lead">{entry.data.description}</p><p class="byline">By <a href="/about/">Arslan Chaudhry</a> / {Math.ceil((entry.body?.split(/\s+/).length||0)/200)} min read</p></header><div class="reading-layout"><aside class="contents"><nav aria-label="On this page"><p class="eyebrow">In this essay</p><ol>{headings.filter(h=>h.depth===2).map(h=><li><a href={'#'+h.slug}>{h.text}</a></li>)}</ol></nav></aside><article class="prose"><Content /></article></div>{related && <div class="next-read"><p class="eyebrow">The underlying case</p><h2><a href={'/work/'+related.id+'/'}>{related.data.title} <Arrow /></a></h2></div>}</div>
+</BaseLayout>

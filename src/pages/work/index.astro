@@ -1,0 +1,9 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkCard from '../../components/WorkCard.astro';
+const work = (await getCollection('work')).sort((a,b)=>a.data.order-b.data.order);
+---
+<BaseLayout title="Selected work" section="Work" description="Product decisions in enterprise software: mass enrolment, a reversible editor migration, and AI beta economics.">
+  <div class="shell"><header class="page-heading"><p class="eyebrow">Selected work</p><h1>What I chose.<br />What it cost.</h1><p class="lead">The useful part of a case is the decision that could have gone another way. These are three from my work on the imc Learning Suite.</p></header>{work.map(item=><WorkCard item={item}/>)}</div>
+</BaseLayout>
