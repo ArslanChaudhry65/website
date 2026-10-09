@@ -3,7 +3,7 @@ export const site = {
   url: 'https://arslanchaudhry.com',
   email: 'chaudhry.arslan@outlook.de',
   linkedin: 'https://www.linkedin.com/in/arslan-chaudhry-',
-  description: 'Product decisions under real constraints. Enterprise scale, reversible platform migrations and AI product economics.',
+  description: 'Product decisions under real constraints. Enterprise scale, reversible platform migrations and learner-facing AI.',
   // Set this only after the content review and legal details are complete.
   publicationApproved: false,
   legal: { name: 'Arslan Chaudhry', address: '', country: '' },

@@ -19,7 +19,7 @@ The default build is a local editorial preview: noindex, blocked in robots.txt, 
 ## Content
 
 - Homepage: src/pages/index.astro
-- Cases and decision note: src/content/work/
+- Cases: src/content/work/
 - Article drafts: src/content/writing/
 - Contact and publication settings: src/data/site.ts
 - Design tokens: src/styles/tokens.css, copied unchanged from the supplied identity
@@ -27,7 +27,7 @@ The default build is a local editorial preview: noindex, blocked in robots.txt, 
 
 Update Markdown and frontmatter to change a case. The collection schema validates required fields at build time. Reuse headings from an existing case. Individual ownership is expressed conservatively. Missing measurements are not replaced with targets.
 
-The two essays are proposed first-person copy derived from the cases. They require Arslan's editorial approval. Add their actual publishedAt date when publishing to include them in RSS. Reusable content templates are in templates/.
+The essay is proposed first-person copy derived from the cases. It requires Arslan's editorial approval. Add their actual publishedAt date when publishing to include them in RSS. Reusable content templates are in templates/.
 
 ## Before public deployment
 

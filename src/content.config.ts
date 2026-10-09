@@ -9,7 +9,7 @@ const work = defineCollection({
     category: z.string(), kind: z.enum(['Case study', 'Decision note']),
     role: z.string(), period: z.string(), status: z.string(),
     decision: z.string(), result: z.string(), order: z.number(),
-    diagram: z.enum(['enrolment', 'migration', 'assistant']),
+    diagram: z.enum(['enrolment', 'migration']),
     reviewRequired: z.boolean().default(true),
   }),
 });

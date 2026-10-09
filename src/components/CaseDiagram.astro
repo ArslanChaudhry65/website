@@ -1,10 +1,9 @@
 ---
-interface Props { kind: 'enrolment' | 'migration' | 'assistant'; compact?: boolean; }
+interface Props { kind: 'enrolment' | 'migration'; compact?: boolean; }
 const { kind, compact = false } = Astro.props;
 const models = {
  enrolment: { label: 'Enrolment architecture', title: 'Separate the work. Protect the transaction.', stages: [['Enrolment request','Validate once'],['Batch processing','Commit enrolments'],['Event delivery','Send notifications']], caption:'Conceptual flow. Separating notification delivery removes SMTP from the enrolment transaction.'},
- migration: { label: 'Migration approach', title: 'One product. Two paths. A deliberate switch.', stages: [['Existing entry point','Resolve deep links'],['Client configuration','Choose the active editor'],['Legacy or new editor','Preserve access rules']], caption:'Conceptual routing. Each client can adopt the new editor without a system-wide cutover.'},
- assistant: { label: 'Beta decision model', title: 'Measure what makes it a product.', stages: [['Customer context','Content + permissions'],['Real usage','Quality + operating cost'],['Product decision','Scope + pricing evidence']], caption:'Beta design, not measured results. Permission fidelity, answer quality and cost need to be evaluated together.'}
+ migration: { label: 'Migration approach', title: 'One product. Two paths. A deliberate switch.', stages: [['Existing entry point','Resolve deep links'],['Client configuration','Choose the active editor'],['Legacy or new editor','Preserve access rules']], caption:'Conceptual routing. Each client can adopt the new editor without a system-wide cutover.'}
 };
 const model = models[kind];
 ---
