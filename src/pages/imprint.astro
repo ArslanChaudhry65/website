@@ -1,5 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
+const { name, address, country } = site.legal;
 ---
-<BaseLayout title="Imprint" noindex><div class="shell"><header class="page-heading"><p class="eyebrow">Site information</p><h1>Imprint</h1></header><div class="prose legal-copy"><p>{site.legal.name}</p>{site.legal.address ? <p class="preserve-lines">{site.legal.address}<br/>{site.legal.country}</p> : <p>Local preview. The publisher's service address must be completed before this site is published.</p>}<p>Contact: <a href={'mailto:'+site.email}>{site.email}</a></p><p>This is a personal website. It does not represent the views of the employers mentioned in the case studies.</p></div></div></BaseLayout>
+<BaseLayout title="Imprint" noindex>
+  <div class="shell">
+    <header class="page-heading"><p class="eyebrow">Site information</p><h1>Imprint</h1></header>
+    <div class="prose legal-copy">
+      <h2>Information according to § 5 DDG</h2>
+      <p class="preserve-lines">{name}{address && <><br/>{address}</>}{country && <><br/>{country}</>}</p>
+      <h2>Contact</h2>
+      <p class="preserve-lines">Email: <a href={'mailto:'+site.email}>{site.email}</a><br/>Phone: <a href={'tel:'+site.phone.replace(/\s/g,'')}>{site.phone}</a></p>
+      <h2>Responsible for content according to § 18 (2) MStV</h2>
+      <p>{name}, address as above.</p>
+      <h2>About this website</h2>
+      <p>This is a personal website. It does not represent the views of the employers mentioned in the case studies.</p>
+    </div>
+  </div>
+</BaseLayout>

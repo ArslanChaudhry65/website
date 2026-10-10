@@ -138,7 +138,6 @@ strong { font-weight: var(--ac-weight-medium); color: var(--ac-ink-0); }
 .experience-item h3 { margin-top: 0; }
 .experience-item a { display: inline-block; margin-top: var(--ac-space-3); }
 .contact-panel { max-width: 700px; border-top: var(--ac-hairline) solid var(--ac-line-strong); padding-top: var(--ac-space-8); }
-.contact-address { font-size: var(--ac-text-body); color: var(--ac-ink-2); margin-top: var(--ac-space-4); overflow-wrap: anywhere; }
 .writing-list { max-width: 820px; display: grid; gap: var(--ac-space-10); }
 .writing-list article { border-top: var(--ac-hairline) solid var(--ac-line); padding-top: var(--ac-space-8); }
 .writing-list article > p:not(.eyebrow) { margin-block: var(--ac-space-4) var(--ac-space-6); color: var(--ac-ink-2); }

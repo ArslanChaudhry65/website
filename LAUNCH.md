@@ -11,4 +11,4 @@ Implementation can be reviewed locally now. The remaining items concern evidence
 - Set reviewRequired: false in reviewed content, set publicationApproved: true only after the above, then build:release.
 - Publication, remote Git setup and DNS changes remain a separate final action.
 
-The supplied private email and LinkedIn URL are already configured.
+The LinkedIn URL is configured and is the call to action for contact. The email address and phone number appear only in the imprint.
